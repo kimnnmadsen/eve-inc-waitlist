@@ -17,11 +17,11 @@ from waitlist.utility.history_utils import create_history_object
 from waitlist.utility.fitting_utils import get_fit_format, parse_dna_fitting,\
     parse_eft, get_waitlist_type_for_fit
 from waitlist.base import db
+from waitlist.utility.coms import get_connector, ComConnector
 from . import bp
 from flask_babel import gettext, ngettext
 from typing import Dict, List, Tuple
 from waitlist.utility.constants import location_flags, groups
-from waitlist.utility.settings import sget_active_ts_id
 from waitlist.utility.config import disable_teamspeak, disable_scruffy_mode
 import operator
 
@@ -311,11 +311,12 @@ def index():
     # noinspection PyPep8
     activegroups = db.session.query(WaitlistGroup).filter(WaitlistGroup.enabled == True).all()
     ts_settings = None
-    ts_id = sget_active_ts_id()
-    if not disable_teamspeak and ts_id is not None:
-        ts_settings = db.session.query(TeamspeakDatum).get(ts_id)
+    com_connector: ComConnector = get_connector()
+    coms = None
+    if com_connector is not None:
+        coms = com_connector.get_basic_connect_info()
     return render_template("xup.html", newbro=new_bro, group=defaultgroup,
-                           groups=activegroups, ts=ts_settings)
+                           groups=activegroups, coms=coms)
 
 
 @bp.route("/<int:fit_id>", methods=['GET'])
@@ -328,14 +329,15 @@ def update(fit_id: int):
         .order_by(WaitlistGroup.ordering).first()
     # noinspection PyPep8
     activegroups = db.session.query(WaitlistGroup).filter(WaitlistGroup.enabled == True).all()
-    ts_settings = None
-    ts_id = sget_active_ts_id()
-    if ts_id is not None:
-        ts_settings = db.session.query(TeamspeakDatum).get(ts_id)
+
+    com_connector: ComConnector = get_connector()
+    coms = None
+    if com_connector is not None:
+        coms = com_connector.get_basic_connect_info()
 
     return render_template("xup.html", newbro=new_bro, group=defaultgroup,
                            groups=activegroups, update=True, oldFitID=fit_id,
-                           ts=ts_settings)
+                           coms=coms)
 
 
 @bp.route("/update", methods=['POST'])

@@ -1163,6 +1163,18 @@ class TeamspeakDatum(Base):
     safetyChannelID = Column('safety_channel_id', Integer)
 
 
+class MurmurDatum(Base):
+    __tablename__ = 'murmur_dati'
+    murmurID = Column('murmur_id', Integer, primary_key=True)
+    displayName = Column("display_name", String(128))
+    grpcHost = Column('grpc_host', String(128))
+    grpcPort = Column('grpc_port', Integer)
+    displayHost = Column('display_host', String(128))
+    displayPort = Column('display_port', Integer)
+    serverID = Column('server_id', Integer)
+    safetyChannelID = Column('safety_channel_id', Integer) # where people get auto moved to
+
+
 class Setting(Base):
     __tablename__ = "settings"
     key = Column('key', String(20), primary_key=True)
@@ -1492,3 +1504,10 @@ class ShipCheck(Base):
             self.check_groups = value
     def __repr__(self):
         return f'<ShipCheck id={self.checkID} name={self.checkName} tag={self.checkTag} order={self.order} type={self.checkType} modifier={self.modifier}>'
+
+
+class MurmurUser(Base):
+    __tablename__: str = 'mumble_user'
+    murmurUserID: Column = Column('murmur_id', Integer, primary_key=True)
+    accountID: Column = Column('account_id', Integer, ForeignKey('accounts.id', onupdate='CASCADE'), nullable=False, unique=True)
+
