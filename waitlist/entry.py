@@ -181,6 +181,7 @@ def main():
     # connect account signal handler
     from waitlist.signal import handler
     handler.account.connect()
+    handler.murmur.connect()
 
     setup_coms()
 

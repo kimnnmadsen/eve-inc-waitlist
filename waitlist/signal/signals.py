@@ -10,7 +10,7 @@ SIG_ALT_LINK_REMOVED = 'alt-link-removed'
 SIG_ALT_LINK_ADDED = 'alt-link-added'
 
 SIG_ACCOUNT_NAME_CHANGE = 'acc-namec-change'
-
+SIG_DEFAULT_CHAR_CHANGE = 'acc-default-char-change'
 
 waitlist_bps = Namespace()
 
@@ -40,6 +40,10 @@ alt_link_added_sig = waitlist_bps.\
 
 account_name_change_sig = waitlist_bps.signal(
     'Called when the name of an account gets changed')
+
+default_char_change_sig = waitlist_bps.signal(
+    'Called when the default char of an account changes'
+)
 
 
 def send_roles_changed(sender, to_id, by_id, added_roles, removed_roles, note):
@@ -85,5 +89,12 @@ def send_account_name_change(sender: Any, by_id: int, account_id: int,
                              note: Optional[str]) -> None:
     account_name_change_sig.send(sender, by_id=by_id, account_id=account_id,
                                  old_name=old_name, new_name=new_name,
+                                 note=note)
+
+def send_default_char_changed(sender: Any, by_id: int, account_id: int,
+                              old_char_id: Optional[int], new_char_id: Optional[int],
+                              note: Optional[str]) -> None:
+    default_char_change_sig.send(sender, by_id=by_id, account_id=account_id,
+                                 old_char_id=old_char_id, new_char_id=new_char_id,
                                  note=note)
 
